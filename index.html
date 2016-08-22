@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Audio Recorder</title>
+
+    <meta name="theme-color" content="#2196F3"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.blue-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.2.0/material.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 2%;
+        }
+
+        button {
+            width: 10%;
+        }
+
+        audio {
+            width: 20%;
+        }
+
+        @media only screen and (max-device-width: 830px) {
+            body {
+                padding: 4%;
+            }
+
+            button {
+                width: 48%;
+            }
+
+            audio {
+                width: 98%;
+            }
+        }
+
+        #audioPlayer, #error {
+            margin-top: 3%;
+        }
+
+        #error {
+            color: #F44336;
+        }
+    </style>
+</head>
+
+<body>
+
+<button id="start"
+        class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" disabled>Start
+</button>
+<button id="stop"
+        class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" disabled>Stop
+</button>
+
+<br/>
+
+<audio id="audioPlayer" autoplay controls>
+    <source id="audioSrc" type="audio/mp3"/>
+</audio>
+
+<br/>
+
+<p id="error"></p>
+
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"
+        integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="js/SimpleAudioRecorder.js"></script>
+<script type="text/javascript">
+    var client = new SFAudioRecorder({
+        onready: function () {
+            $('#start').prop('disabled', false);
+        },
+        onstarted: function () {
+            $('#start').prop('disabled', true);
+            $('#stop').prop('disabled', false);
+        },
+        onstopped: function (blob) {
+            $('#start').prop('disabled', false);
+            $('#stop').prop('disabled', true);
+
+            var audioURL = window.URL.createObjectURL(blob);
+            $('#audioSrc').attr('src', audioURL);
+            $('#audioPlayer')[0].load();
+        },
+        onerror: function (err) {
+            $('#error').text(err);
+        }
+    });
+
+    $('#start').click(function () {
+        client.start();
+    });
+    $('#stop').click(function () {
+        client.stop();
+    });
+</script>
+
+</body>
+
+</html>

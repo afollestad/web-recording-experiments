@@ -3,7 +3,7 @@
 
 <head>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Audio Recorder</title>
+    <title>Video Recorder</title>
 
     <meta name="theme-color" content="#2196F3"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,7 +22,7 @@
             width: 10%;
         }
 
-        audio {
+        audio, video {
             width: 20%;
         }
 
@@ -38,9 +38,13 @@
             audio {
                 width: 98%;
             }
+
+            video {
+                width: 96%;
+            }
         }
 
-        #audioPlayer, #error {
+        #previewView, #resultView, #error {
             margin-top: 3%;
         }
 
@@ -61,9 +65,8 @@
 
 <br/>
 
-<audio id="audioPlayer" autoplay controls>
-    <source id="audioSrc" type="audio/mp3"/>
-</audio>
+<video id="previewView" autoplay muted></video>
+<video id="resultView" style="margin-left: 2%" autoplay controls></video>
 
 <br/>
 
@@ -72,9 +75,11 @@
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"
         integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 
-<script type="text/javascript" src="js/SimpleAudioRecorder.js"></script>
+<script type="text/javascript" src="js/SimpleVideoRecorder.js"></script>
+<script type="text/javascript" src="js/shim.js"></script>
 <script type="text/javascript">
-    var client = new SFAudioRecorder({
+    var client = new SimpleVideoRecorder({
+        previewView: $('#previewView')[0],
         onready: function () {
             $('#start').prop('disabled', false);
         },
@@ -86,9 +91,8 @@
             $('#start').prop('disabled', false);
             $('#stop').prop('disabled', true);
 
-            var audioURL = window.URL.createObjectURL(blob);
-            $('#audioSrc').attr('src', audioURL);
-            $('#audioPlayer')[0].load();
+            var videoURL = window.URL.createObjectURL(blob);
+            $('#resultView').attr('src', videoURL);
         },
         onerror: function (err) {
             $('#error').text(err);

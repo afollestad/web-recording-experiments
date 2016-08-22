@@ -1,10 +1,10 @@
-var method = SimpleAudioRecorder.prototype;
+var method = SimpleVideoRecorder.prototype;
 
 /**
  * @param {Object} settings
  * @constructor
  */
-function SimpleAudioRecorder(settings) {
+function SimpleVideoRecorder(settings) {
     if (!settings) {
         settings = {};
     }
@@ -41,11 +41,13 @@ function SimpleAudioRecorder(settings) {
     navigator.getUserMedia(
         // constraints - only audio needed for this app
         {
+            video: true,
             audio: true
         },
 
         // Success callback
         function (stream) {
+            showPreview(stream);
             method._mediaRecorder = new MediaRecorder(stream);
             if (!method._mediaRecorder) {
                 method._settings.onerror('The media recorder API isn\'t supported in this browser!');
@@ -61,6 +63,19 @@ function SimpleAudioRecorder(settings) {
     );
 }
 
+function showPreview(stream) {
+    if (!method._settings.previewView) {
+        console.log('WARNING: No previewView provided to display the camera preview.');
+        return;
+    }
+
+    if (window.URL) {
+        method._settings.previewView.src = window.URL.createObjectURL(stream);
+    } else {
+        method._settings.previewView.src = stream;
+    }
+}
+
 function setupMediaRecorder() {
     method._chunks = [];
     var recorder = method._mediaRecorder;
@@ -68,7 +83,7 @@ function setupMediaRecorder() {
         method._chunks.push(e.data);
     };
     recorder.onstop = function (e) {
-        var blob = new Blob(method._chunks, {'type': 'audio/mp3'});
+        var blob = new Blob(method._chunks, {'type': 'audio/webm'});
         method._chunks = [];
         method._settings.onstopped(blob);
     };
@@ -86,4 +101,4 @@ method.stop = function () {
     console.log(method._mediaRecorder.state);
 };
 
-// module.exports = SimpleAudioRecorder;
+// module.exports = SimpleVideoRecorder;

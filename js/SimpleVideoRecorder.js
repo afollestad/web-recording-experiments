@@ -8,6 +8,9 @@ function SimpleVideoRecorder(settings) {
     if (!settings) {
         settings = {};
     }
+    if (!settings.contentType) {
+        settings.contentType = 'audio/webm';
+    }
     if (!settings.onerror) {
         settings.onerror = function (err) {
             console.log('Error: ' + err)
@@ -48,7 +51,13 @@ function SimpleVideoRecorder(settings) {
         // Success callback
         function (stream) {
             showPreview(stream);
-            method._mediaRecorder = new MediaRecorder(stream);
+            try {
+                var options = {mimeType: method._settings.contentType};
+                method._mediaRecorder = new MediaRecorder(stream, options);
+            } catch (e) {
+                method._settings.onerror(e);
+                return;
+            }
             if (!method._mediaRecorder) {
                 method._settings.onerror('The media recorder API isn\'t supported in this browser!');
                 return;
@@ -83,7 +92,7 @@ function setupMediaRecorder() {
         method._chunks.push(e.data);
     };
     recorder.onstop = function (e) {
-        var blob = new Blob(method._chunks, {'type': 'audio/webm'});
+        var blob = new Blob(method._chunks, {'type': method._settings.contentType});
         method._chunks = [];
         method._settings.onstopped(blob);
     };

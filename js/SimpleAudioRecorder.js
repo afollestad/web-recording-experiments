@@ -8,9 +8,12 @@ function SimpleAudioRecorder(settings) {
     if (!settings) {
         settings = {};
     }
+    if (!settings.contentType) {
+        settings.contentType = 'audio/webm';
+    }
     if (!settings.onerror) {
         settings.onerror = function (err) {
-            console.log('Error: ' + err)
+            console.log('Error: ' + err);
         };
     }
     if (!settings.onready) {
@@ -46,7 +49,13 @@ function SimpleAudioRecorder(settings) {
 
         // Success callback
         function (stream) {
-            method._mediaRecorder = new MediaRecorder(stream);
+            try {
+                var options = {mimeType: method._settings.contentType};
+                method._mediaRecorder = new MediaRecorder(stream, options);
+            } catch (e) {
+                method._settings.onerror(e);
+                return;
+            }
             if (!method._mediaRecorder) {
                 method._settings.onerror('The media recorder API isn\'t supported in this browser!');
                 return;
@@ -68,7 +77,7 @@ function setupMediaRecorder() {
         method._chunks.push(e.data);
     };
     recorder.onstop = function (e) {
-        var blob = new Blob(method._chunks, {'type': 'audio/mp3'});
+        var blob = new Blob(method._chunks, {'type': method._settings.contentType});
         method._chunks = [];
         method._settings.onstopped(blob);
     };
@@ -77,13 +86,11 @@ function setupMediaRecorder() {
 method.start = function () {
     setupMediaRecorder();
     method._mediaRecorder.start();
-    console.log(method._mediaRecorder.state);
     this._settings.onstarted();
 };
 
 method.stop = function () {
     method._mediaRecorder.stop();
-    console.log(method._mediaRecorder.state);
 };
 
 // module.exports = SimpleAudioRecorder;

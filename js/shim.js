@@ -2025,7 +2025,7 @@
                             }
                             logging('ff37: ' + JSON.stringify(constraints));
                         }
-                        return navigator.mozGetUserMedia(constraints, onSuccess, onError);
+                        return navigator.mediaDevices.getUserMedia(constraints, onSuccess, onError);
                     };
                     navigator.getUserMedia = getUserMedia_;
                     // Returns the result of getUserMedia as a Promise.

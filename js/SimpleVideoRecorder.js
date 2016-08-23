@@ -9,7 +9,7 @@ function SimpleVideoRecorder(settings) {
         settings = {};
     }
     if (!settings.contentType) {
-        settings.contentType = 'audio/webm';
+        settings.contentType = 'video/webm';
     }
     if (!settings.onerror) {
         settings.onerror = function (err) {
